@@ -69,9 +69,8 @@ class AudioFP():
             objname = objname + '.pkl'
             with open(objname, 'rb') as inputobj:
                 data = pickle.load(inputobj)
-                self.songname = data.songname
-                fptemp = data.fingerprint
-                self.fingerprint = datasketch.MinHash(hashvalues=fptemp)
+                self.songname = data['songname']
+                self.fingerprint = data['fingerprint']
             if input('Do you want to see the details of the file? Enter "y" or "n": ') == 'y':
                 plot = True
                 print('Songname: ', self.songname)
