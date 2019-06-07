@@ -75,7 +75,7 @@ class AudioFP():
             if input('Do you want to see the details of the file? Enter "y" or "n": ') == 'y':
                 plot = True
                 print('Songname: ', self.songname)
-                print('Audio-fingerprint:'
+                print('Audio-fingerprint:')
                 print(self.fingerprint.digest())
             else:
                 plot = False
