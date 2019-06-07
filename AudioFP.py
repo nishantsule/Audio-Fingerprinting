@@ -31,7 +31,7 @@ class AudioFP():
     # whether they want to save the object to file. Enter 'y' to save or 'n' to skip.
 
     def __init__(self):
-        audio_type = input('Enter "f" to read from file, "r" to record, or "s" to open saved object: ')
+        audio_type = input('Enter "f" to read from audio file, "r" to record audio, or "s" to open saved fingerprint: ')
         if audio_type == 'f':
             filename = input('Enter the filename you want to read excluding the extension: ')
             self.songname = filename
