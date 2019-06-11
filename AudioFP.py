@@ -33,6 +33,7 @@ class AudioFP():
     def __init__(self):
         self.songname = ''
         self.fingerprint = datasketch.MinHash(num_perm=256)
+        self.framerate = []
         if input('Do you want to proceed normally? Enter "y" or "n": ') == 'y':
             self.ask_user()
         else:
@@ -47,7 +48,7 @@ class AudioFP():
                 plot = True
             else:
                 plot = False
-            channels, framerate = self.read_audiofile(plot)
+            channels, self.framerate = self.read_audiofile(plot, filename)
             f, t, sgram = self.generate_spectrogram(plot, channels, framerate)
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
@@ -63,7 +64,7 @@ class AudioFP():
                 plot = True
             else:
                 plot = False
-            channels, framerate = self.record_audiofile(plot)
+            channels, self.framerate = self.record_audiofile(plot)
             f, t, sgram = self.generate_spectrogram(plot, channels, framerate)
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
@@ -79,9 +80,11 @@ class AudioFP():
                 data = pickle.load(inputobj)
                 self.songname = data['songname']
                 self.fingerprint = data['fingerprint']
+                self.framerate = data['framerate']
             if input('Do you want to see the details of the file? Enter "y" or "n": ') == 'y':
                 plot = True
                 print('Songname: ', self.songname)
+                print('Framerate: ', self.framerate)
                 print('Audio-fingerprint:')
                 print(self.fingerprint.digest())
             else:
@@ -92,10 +95,10 @@ class AudioFP():
         
     # Read audio file using pydub and plot signal.
     # The audio file has to be .mp3 format
-    def read_audiofile(self, plot):
+    def read_audiofile(self, plot, filename):
         songdata = []  # Empty list for holding audio data
         channels = []  # Empty list to hold data from separate channels
-        audiofile = pydub.AudioSegment.from_file(self.songname + '.mp3')
+        audiofile = pydub.AudioSegment.from_file(filename + '.mp3')
         songdata = np.frombuffer(audiofile._data, np.int16)
         for chn in range(audiofile.channels):
             channels.append(songdata[chn::audiofile.channels])  # separate signal from channels
@@ -210,6 +213,6 @@ class AudioFP():
     # Save the AudioFP object to file for later use
     def save_fingerprint(self):
         filename = self.songname + '.pkl'
-        obj_dict = {'songname': self.songname, 'fingerprint': self.fingerprint}
+        obj_dict = {'songname': self.songname, 'fingerprint': self.fingerprint, 'framerate': self.framerate}
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj_dict, output, pickle.HIGHEST_PROTOCOL)
