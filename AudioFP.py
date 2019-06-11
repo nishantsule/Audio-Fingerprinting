@@ -31,9 +31,17 @@ class AudioFP():
     # whether they want to save the object to file. Enter 'y' to save or 'n' to skip.
 
     def __init__(self):
+        self.songname = ''
+        self.fingerprint = datasketch.MinHash(num_perm=256)
+        if input('Do you want to proceed normally? Enter "y" or "n": ') == 'y':
+            self.ask_user()
+        else:
+            pass
+        
+    def ask_user(self):
         audio_type = input('Enter "f" to read from audio file, "r" to record audio, or "s" to open saved fingerprint: ')
         if audio_type == 'f':
-            filename = input('Enter the filename you want to read excluding the extension: ')
+            filename = input('Enter the filename you want to read (excluding the extension): ')
             self.songname = filename
             if input('Do you want to show all plots? Enter "y" or "n": ') == 'y':
                 plot = True
@@ -65,7 +73,7 @@ class AudioFP():
             else:
                 print('Not saving anything')
         elif audio_type == 's':
-            objname = input('Enter the filename where the fingerprint is saved: ')
+            objname = input('Enter the filename (excluding the extention) where the fingerprint is saved: ')
             objname = objname + '.pkl'
             with open(objname, 'rb') as inputobj:
                 data = pickle.load(inputobj)
@@ -193,7 +201,6 @@ class AudioFP():
                     t_delta = t2 - t1
                     if t_delta >= peak_time_delta_min and t_delta <= peak_time_delta_max:
                         s.append(str(np.rint(f1)) + str(np.rint(f2)) + str(np.rint(t_delta))) 
-        self.fingerprint = datasketch.MinHash(num_perm=256)
         for data in s:
             self.fingerprint.update(data.encode('utf8'))
         if plot:
