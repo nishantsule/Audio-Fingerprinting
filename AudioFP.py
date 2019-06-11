@@ -49,7 +49,7 @@ class AudioFP():
             else:
                 plot = False
             channels, self.framerate = self.read_audiofile(plot, filename)
-            f, t, sgram = self.generate_spectrogram(plot, channels, framerate)
+            f, t, sgram = self.generate_spectrogram(plot, channels, self.framerate)
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
             if input('Do you want to save the fingerprint to file for later use? Enter "y" or "n": ') == 'y':
@@ -65,7 +65,7 @@ class AudioFP():
             else:
                 plot = False
             channels, self.framerate = self.record_audiofile(plot)
-            f, t, sgram = self.generate_spectrogram(plot, channels, framerate)
+            f, t, sgram = self.generate_spectrogram(plot, channels, self.framerate)
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
             if input('Do you want to save the fingerprint to file for later use? Enter "y" or "n": ') == 'y':
@@ -103,12 +103,13 @@ class AudioFP():
         for chn in range(audiofile.channels):
             channels.append(songdata[chn::audiofile.channels])  # separate signal from channels
         framerate = audiofile.frame_rate
+        channels = np.sum(channels, axis=0) / len(channels)  # Averaging signal over all channels
         # Plot time signal
         if plot:
             p1 = figure(plot_width=900, plot_height=500, title='Audio Signal', 
                         x_axis_label='Time (s)', y_axis_label='Amplitude (arb. units)')
-            time = np.linspace(0, len(channels[0])/framerate, len(channels[0]))
-            p1.line(time[0::1000], channels[0][0::1000])
+            time = np.linspace(0, len(channels)/framerate, len(channels))
+            p1.line(time[0::1000], channels[0::1000])
             show(p1)
         return channels, framerate
             
@@ -139,6 +140,7 @@ class AudioFP():
             p.terminate()
         else:
             sys.exit('Audio recording did not start. Start over again.')
+        channels = np.sum(channels, axis=0) / len(channels)  # Averaging signal over all channels
         # Plot time signal
         if plot:
             p1 = figure(plot_width=900, plot_height=500, title='Audio Signal', 
@@ -149,8 +151,7 @@ class AudioFP():
         return channels, framerate
         
     # Generate and plot spectrogram of audio data
-    def generate_spectrogram(self, plot, channels, framerate):
-        audiosignal = np.sum(channels, axis=0) / len(channels)  # Averaging signal over all channels
+    def generate_spectrogram(self, plot, audiosignal, framerate):
         fs = framerate  # sampling rate
         window = 'hamming'  # window function
         noverlap = int(overlap_ratio * nperseg)  # number of points to overlap
