@@ -34,7 +34,7 @@ class AudioFP():
         self.songname = ''
         self.fingerprint = datasketch.MinHash(num_perm=256)
         self.framerate = []
-        if input('Do you want to proceed normally? Enter "y" or "n": ') == 'y':
+        if input('Do you want to proceed manually? Enter "y" or "n": ') == 'n':
             self.ask_user()
         else:
             pass
