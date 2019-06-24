@@ -253,3 +253,18 @@ def compare_fingerprints(s1, s2):
     else:
         print('{} and {} are different'.format(s1.songname, s2.songname))
         print('Jaccard similarity = ', jac_sim)
+        
+# Add Gaussian white noise to a signal
+def add_noise(signal, framerate):
+    time = np.linspace(0, len(signal)/framerate, len(signal))
+    signalpower = signal ** 2
+    # Set a target channel noise power to something very noisy
+    target_noise_db = int(input('Enter the noise level you want to add in dB: '))
+    # Convert to linear units
+    target_noise_power = 10 ** (target_noise_db / 10)
+    # Generate noise samples
+    mean_noise = 0
+    noise = np.random.normal(mean_noise, np.sqrt(target_noise_power), len(signal))
+    # Noise up the original signal (again) and plot
+    noisy_signal = signal + noise
+    return noisy_signal
