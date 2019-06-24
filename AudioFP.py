@@ -236,3 +236,20 @@ class AudioFP():
         obj_dict = {'songname': self.songname, 'fingerprint': self.fingerprint, 'framerate': self.framerate}
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj_dict, output, pickle.HIGHEST_PROTOCOL)
+            
+            
+# Compare fingerprints of two songs 
+def compare_fingerprints(s1, s2):
+    jac_sim = s1.fingerprint.jaccard(s2.fingerprint)
+    if jac_sim >= 0.9:
+        print('{} and {} are identical!'.format(s1.songname, s2.songname))
+        print('Jaccard similarity = ', jac_sim)
+    elif jac_sim >= 0.1 and jac_sim < 0.9:
+        print('{} and {} are quite similar'.format(s1.songname, s2.songname))
+        print('Jaccard similarity = ', jac_sim)
+    elif jac_sim >= 0.05 and jac_sim < 0.1:
+        print('{} and {} might have some similarity'.format(s1.songname, s2.songname))
+        print('Jaccard similarity = ', jac_sim)
+    else:
+        print('{} and {} are different'.format(s1.songname, s2.songname))
+        print('Jaccard similarity = ', jac_sim)
