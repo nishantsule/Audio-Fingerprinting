@@ -9,7 +9,6 @@ import pyaudio
 import warnings
 import sys
 import pickle 
-# import hashlib
 
 # This class defines an AudioFP object that stores the name a song and its fingerprint. 
 # It also contains all the functions used to read/record audio, generate spectrogram, find peaks,
@@ -211,24 +210,6 @@ class AudioFP():
         if plot:
             print('{} audio-fingerprint: '.format(self.songname))
             print(self.fingerprint.digest())
-            
-#     def generate_fingerprint(self, plot, fp, tp, peaks):
-#         # Create the data to be used for fingerprinting
-#         # for each frequency (anchor) find the next few frequencies (targets) and calculate their time deltas
-#         # the anchor-target frequency pairs and their time deltas will be used to generate the fingerprints
-#         s = []  # Empty list to contain data for fingerprint
-#         for i in range(len(peaks)):
-#             for j in range(1, peak_connectivity):
-#                 if (i + j) < len(peaks):
-#                     f1 = fp[i]
-#                     f2 = fp[i + j]
-#                     t1 = tp[i]
-#                     t2 = tp[i + j]
-#                     t_delta = t2 - t1
-#                     if t_delta >= peak_time_delta_min and t_delta <= peak_time_delta_max:
-#                         h = hashlib.sha1((str(f1) + str(f2) + str(t_delta)).encode('utf8'))
-#                         s.append([h.hexdigest(), t1])
-#         return s
     
     # Save the AudioFP object to file for later use
     def save_fingerprint(self):
