@@ -10,6 +10,28 @@ import warnings
 import sys
 import pickle 
 
+
+# Parameters for tuning the Audiofingerprinting algorithm
+
+# Parameters used in generating spectrogram
+#----------------------------------
+nperseg = 16 * 256  # window size
+overlap_ratio = 0.4  # degree of overlap, larger number->more overlap, denser fingerprint
+#----------------------------------
+
+# Parameters used in finding local peaks
+#-------------------------
+min_peak_sep = 15  # larger sep -> less peaks -> less accuracy, but faster fingerprinting
+min_peak_amp = 10  # larger min amp -> less peaks -> less accuracy, but faster fingerprinting
+#-------------------------
+
+# Parameters used in generating fingerprint
+#------------------------------
+peak_connectivity = 15  # Number of neighboring peaks to use as target for each anchor
+peak_time_delta_min = 0  # Minimum spacing in time between peaks for anchor and target
+peak_time_delta_max = 200  # Maximum spacing in time between peaks for anchor and target
+#------------------------------
+
 # This class defines an AudioFP object that stores the name a song and its fingerprint. 
 # It also contains all the functions used to read/record audio, generate spectrogram, find peaks,
 # generate fingerprint, and saving the object to file.
@@ -30,14 +52,15 @@ class AudioFP():
     # Finally, if the user chose to read audio from file or record it, they are prompted to choose
     # whether they want to save the object to file. Enter 'y' to save or 'n' to skip.
 
-    def __init__(self):
+    def __init__(self, process='m'):
         self.songname = ''
         self.fingerprint = datasketch.MinHash(num_perm=256)
         self.framerate = []
-        if input('Enter "a" for automated fingerprinting or "m" to proceed manually: ') == 'a':
-            self.ask_user()
-        else:
-            pass
+        if process == '':
+            if input('Enter "a" for automated fingerprinting or "m" to proceed manually: ') == 'a':
+                self.ask_user()
+            else:
+                pass
         
     def ask_user(self):
         audio_type = input('Enter "f" to read from audio file, "r" to record audio, or "s" to open saved fingerprint: ')
