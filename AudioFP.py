@@ -9,6 +9,7 @@ import pyaudio
 import warnings
 import sys
 import pickle 
+import os
 
 
 # Parameters for tuning the Audiofingerprinting algorithm
@@ -56,17 +57,22 @@ class AudioFP():
         self.songname = ''
         self.fingerprint = datasketch.MinHash(num_perm=256)
         self.framerate = []
-        if process == '':
+        if process == 'a':
+            self.ask_user()
+        elif process == 'm':
+            pass
+        else:
             if input('Enter "a" for automated fingerprinting or "m" to proceed manually: ') == 'a':
                 self.ask_user()
             else:
-                pass
+                sys.exit('''Error: Incorrect entry.''')
         
     def ask_user(self):
         audio_type = input('Enter "f" to read from audio file, "r" to record audio, or "s" to open saved fingerprint: ')
         if audio_type == 'f':
             filename = input('Enter the filename you want to read (excluding the extension): ')
             self.songname = filename
+            filename = os.getcwd() + '/songs/' + self.songname
             if input('Do you want to show all plots? Enter "y" or "n": ') == 'y':
                 plot = True
             else:
@@ -76,7 +82,6 @@ class AudioFP():
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
             if input('Do you want to save the fingerprint to file for later use? Enter "y" or "n": ') == 'y':
-                print('Saving the fingerprint')
                 self.save_fingerprint()
             else:
                 print('Not saving anything')
@@ -91,13 +96,12 @@ class AudioFP():
             fp, tp, peaks = self.find_peaks(plot, f, t, sgram)
             self.generate_fingerprint(plot, fp, tp, peaks)
             if input('Do you want to save the fingerprint to file for later use? Enter "y" or "n": ') == 'y':
-                print('Saving the fingerprint')
                 self.save_fingerprint()
             else:
                 print('Not saving anything')
         elif audio_type == 's':
             objname = input('Enter the filename (excluding the extention) where the fingerprint is saved: ')
-            objname = objname + '.pkl'
+            objname = os.getcwd() + '/songs/' + objname + '.pkl'
             with open(objname, 'rb') as inputobj:
                 data = pickle.load(inputobj)
                 self.songname = data['songname']
@@ -121,6 +125,7 @@ class AudioFP():
         songdata = []  # Empty list for holding audio data
         channels = []  # Empty list to hold data from separate channels
         audiofile = pydub.AudioSegment.from_file(filename + '.mp3')
+        self.songname = os.path.split(filename)[1]
         songdata = np.frombuffer(audiofile._data, np.int16)
         for chn in range(audiofile.channels):
             channels.append(songdata[chn::audiofile.channels])  # separate signal from channels
@@ -236,8 +241,9 @@ class AudioFP():
     
     # Save the AudioFP object to file for later use
     def save_fingerprint(self):
-        filename = self.songname + '.pkl'
+        filename = os.getcwd() + '/songs/' + self.songname + '.pkl'
         obj_dict = {'songname': self.songname, 'fingerprint': self.fingerprint, 'framerate': self.framerate}
+        print('Saving the fingerprint for:', self.songname)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj_dict, output, pickle.HIGHEST_PROTOCOL)
             
