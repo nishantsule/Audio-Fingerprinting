@@ -124,6 +124,7 @@ class AudioFP():
     def read_audiofile(self, plot, filename):
         songdata = []  # Empty list for holding audio data
         channels = []  # Empty list to hold data from separate channels
+        filename = os.getcwd() + '/songs/' + filename
         audiofile = pydub.AudioSegment.from_file(filename + '.mp3')
         self.songname = os.path.split(filename)[1]
         songdata = np.frombuffer(audiofile._data, np.int16)
