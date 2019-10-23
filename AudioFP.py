@@ -72,7 +72,6 @@ class AudioFP():
         if audio_type == 'f':
             filename = input('Enter the filename you want to read (excluding the extension): ')
             self.songname = filename
-            filename = os.getcwd() + '/songs/' + self.songname
             if input('Do you want to show all plots? Enter "y" or "n": ') == 'y':
                 plot = True
             else:
